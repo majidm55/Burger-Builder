@@ -81,6 +81,10 @@ class BurgerBuilder extends Component {
     this.setState({shouldOrder: false});
   }
 
+  shouldContinueHandler = () => {
+    alert('You continue');
+  }
+
   render () {
     const disableInfo = {
       ...this.state.ingredients
@@ -96,7 +100,11 @@ class BurgerBuilder extends Component {
         show={this.state.shouldOrder}
         modalClosed={this.shouldCancelOrderHandler}
         >
-          <OrderSummary  ingredients={this.state.ingredients}/>
+          <OrderSummary  
+          ingredients={this.state.ingredients}
+          purchaseCanceled={this.shouldCancelOrderHandler}
+          purchaseContinued={this.shouldContinueHandler}
+          />
         </Modal>
         <Burger ingredients={this.state.ingredients}/>
         <BuildContorls 
