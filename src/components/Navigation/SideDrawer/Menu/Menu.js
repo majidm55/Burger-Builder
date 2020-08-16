@@ -1,9 +1,10 @@
 import React from 'react';
-import Logo from '../../../Logo/Logo';
-
+import classes from './Menu.css';
 const menu = (props) => (
-  <div onClick={props.clicked}>
-    {/* <Logo /> */} MENU
+  <div  className={classes.Menu} onClick={props.clicked}>
+    <div></div>
+    <div></div>
+    <div></div>
   </div>
 );
 
