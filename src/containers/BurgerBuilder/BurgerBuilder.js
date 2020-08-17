@@ -4,6 +4,9 @@ import Burger from '../../components/Burger/Burger';
 import BuildContorls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import axios from '../../axios-orders';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 
 const INGREDIENT_PRICES = {
@@ -15,17 +18,22 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component {
   state = {
-    ingredients : {
-      salad: 0,
-      turkeyBacon: 0,
-      cheese: 0,
-      meat: 0
-    },
+    ingredients : null,
     totalPrice: 3,
     purchase: false,
-    shouldOrder: false
+    shouldOrder: false,
+    loading: false,
+    error: false
   }
-
+  componentDidMount () {
+    axios.get('/ingredients.json')
+    .then(response => {
+      this.setState({ingredients: response.data});
+    })
+    .catch(error => {
+      this.setState({error: true})
+    });
+  }
   updatePurchase (ingredients) {
     const sum = Object.keys(ingredients)
       .map(igKey => {
@@ -82,8 +90,34 @@ class BurgerBuilder extends Component {
   }
 
   shouldContinueHandler = () => {
-    alert('You continue');
+    // alert('You continue');
+    this.setState({loading: true});
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.totalPrice,
+      customer: {
+        name: 'M.Majid',
+        address: {
+          street: 'Test Street',
+          zip: '3456',
+          country: 'USAYE'
+        },
+        email: 'soo@soo.com'
+      },
+      deliveryMethod: 'fastest'
+    }
+    axios.post('/orders.json', order)
+      .then(response => {
+        console.log(response);
+        this.setState({loading: false, shouldOrder : false});
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({loading: false, shouldOrder : false});
+
+      });
   }
+  
 
   render () {
     const disableInfo = {
@@ -91,35 +125,45 @@ class BurgerBuilder extends Component {
     };
 
     for (let key in disableInfo) {
-      disableInfo[key] = disableInfo[key] <=0
+      disableInfo[key] = disableInfo[key] <= 0
     }
+    let orderSummary = null;
 
+    let burger = this.state.error ? <p>Ingredients Can't be loaded</p> : <Spinner />
+    if ( this.state.ingredients) {
+      burger = (
+        <Aux>
+          <Burger ingredients={this.state.ingredients}/>
+          <BuildContorls 
+          ingredientAdd={this.addIngredient}
+          ingredientRemove={this.removeIngredient}
+          disabled={disableInfo}
+          purchasable={this.state.purchase}
+          ordered={this.shouldOrderHandler}
+          price={this.state.totalPrice}/>
+        </Aux>
+        );
+        orderSummary = <OrderSummary  
+          ingredients={this.state.ingredients}
+          price={this.state.totalPrice}
+          purchaseCanceled={this.shouldCancelOrderHandler}
+          purchaseContinued={this.shouldContinueHandler}/>;
+    }
+    if (this.state.loading) {
+      orderSummary = < Spinner /> ;
+    }
     return (
       <Aux>
         <Modal 
         show={this.state.shouldOrder}
         modalClosed={this.shouldCancelOrderHandler}
         >
-          <OrderSummary  
-          ingredients={this.state.ingredients}
-          price={this.state.totalPrice}
-          purchaseCanceled={this.shouldCancelOrderHandler}
-          purchaseContinued={this.shouldContinueHandler}
-          />
+          {orderSummary}
         </Modal>
-        <Burger ingredients={this.state.ingredients}/>
-        <BuildContorls 
-        ingredientAdd={this.addIngredient}
-        ingredientRemove={this.removeIngredient}
-        disabled={disableInfo}
-        purchasable={this.state.purchase}
-        ordered={this.shouldOrderHandler}
-        price={this.state.totalPrice}
-        />
-
+        {burger}
       </Aux>
     );
   }
 }
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axios);
