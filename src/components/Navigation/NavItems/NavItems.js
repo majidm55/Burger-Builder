@@ -4,8 +4,8 @@ import NavEl from './NavEl/NavEl';
 
 const navItems = (props) => (
   <ul className={classes.NavItems}>
-    <NavEl link="/" active>Burger Builder</NavEl>
-    <NavEl>Checkout</NavEl>
+    <NavEl link="/" exact>Burger Builder</NavEl>
+    <NavEl link="/orders">Orders</NavEl>
   </ul>
 );
 
