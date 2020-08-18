@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom';
 import Layout from '../src/hoc/Layout/Layout';
 import BurgerBuilder from '../src/containers/BurgerBuilder/BurgerBuilder';
 import Checkout from './containers/Checkout/Checkout';
-import { BrowserRouter } from 'react-router-dom';
 
 class App extends Component {
   render() {

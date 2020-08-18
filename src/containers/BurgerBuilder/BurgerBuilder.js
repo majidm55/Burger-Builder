@@ -86,8 +86,8 @@ class BurgerBuilder extends Component {
   }
 
   shouldCancelOrderHandler = () => {
-    // this.setState({shouldOrder: false});
-    this.props.history.push('/');
+    this.setState({shouldOrder: false});
+    // this.props.history.push('/');
 
   }
 
@@ -118,7 +118,16 @@ class BurgerBuilder extends Component {
     //     this.setState({loading: false, shouldOrder : false});
 
     //   });
-    this.props.history.push('/checkout');
+    const query = [];
+    for (let i in this.state.ingredients) {
+      query.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
+    }
+    query.push('price=' + this.state.totalPrice);
+    const queryString = query.join('&');
+    this.props.history.push({
+      pathname:'/checkout',
+      search: '?' + queryString
+    });
   }
   
 
