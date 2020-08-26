@@ -7,6 +7,7 @@ import classes from './ContactData.css';
 import Input from '../../../components/UI/Input/Input';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../../store/actions/index';
+import { updateObject, checkValidity } from '../../../shared/utility';
 
 class ContactData extends Component {
   state = {
@@ -94,34 +95,6 @@ class ContactData extends Component {
     formIsValid: false,
   }
   
-  checkValidity(value, rules) {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-
-    if (rules.isEmail) {
-      const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-
-    return isValid;
-  }
-
   orderHandler = (event) => {
     event.preventDefault();
     const formData = {};
@@ -140,16 +113,14 @@ class ContactData extends Component {
   }
 
   inputChangedHandler = (event, inputId) => {
-    const updatedForm = {
-      ...this.state.orderForm
-    }
-    const updatedFormEl = {
-      ...updatedForm[inputId]
-    };
-    updatedFormEl.value = event.target.value;
-    updatedFormEl.valid = this.checkValidity(updatedFormEl.value, updatedFormEl.validation);
-    updatedFormEl.touched =  true;
-    updatedForm[inputId] = updatedFormEl;
+    const updatedFormEl = updateObject(this.state.orderForm[inputId],{
+      value: event.target.value,
+      valid: checkValidity(event.target.value, this.state.orderForm[inputId].validation),
+      touched: true
+    });
+    const updatedForm = updateObject(this.state.orderForm, {
+      [inputId]: updatedFormEl
+    })
 
     let formIsValid = true;
     for (let inputId in updatedForm) {

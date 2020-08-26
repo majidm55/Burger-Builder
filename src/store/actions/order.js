@@ -27,13 +27,10 @@ export const purchaseBurger = (orderData, token) => {
     dispatch(purchaseBurgerStart());
     axios.post('/orders.json?auth=' + token, orderData)
       .then(response => {
-        console.log(response.data);
         dispatch(purchaseBurgerSuccess(response.data.name, orderData));
       })
       .catch(error => {
-        console.log(error);
         dispatch(purchaseBurgerFail( error ));
-
       });
   };
 };
@@ -77,7 +74,6 @@ export const fetchOrders = (token, userId) => {
               id: key
             });
           }
-          console.log(fetchedOrders);
           dispatch(fetchOrdersSuccess(fetchedOrders));
           })
           .catch(err => {
