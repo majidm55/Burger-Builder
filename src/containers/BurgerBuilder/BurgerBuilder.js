@@ -11,9 +11,9 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
-    shouldOrder: false,
+    shouldOrder: false
   }
 
   componentDidMount () {

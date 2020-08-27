@@ -8,7 +8,7 @@ const navItems = (props) => (
     {props.isAuthenticated? <NavEl link="/orders">Orders</NavEl> : null}
     {!props.isAuthenticated 
     ? <NavEl link="/auth">Authenticate</NavEl>
-  : < NavEl link = "/logout" > Logout </NavEl>}
+  : <NavEl link="/logout">Logout</NavEl>}
   </ul>
 );
 
